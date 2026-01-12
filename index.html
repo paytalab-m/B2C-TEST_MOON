@@ -123,8 +123,8 @@
         /* [수정] 지도 영역: 높이 제한 해제(auto), 핀 삭제 대응 */
         .map-area { 
             width: 100%; 
-            height: auto;      /* 이미지 비율대로 늘어남 */
-            min-height: 160px; /* 이미지가 없을 때 최소 공간 확보 */
+            height: auto;      
+            min-height: 160px; 
             background-color: #F0F4F8; 
             position: relative; 
             cursor: pointer; 
@@ -177,7 +177,7 @@
         .input-field {
             width: 100%; height: 56px; padding: 0 16px; font-size: 20px; font-weight: 700; color: var(--text-main);
             border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; background: #F7F8FA; outline: none; transition: all 0.2s;
-            -webkit-appearance: none; -moz-appearance: none; appearance: none; /* [수정] 표준 속성 추가 */
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
             letter-spacing: 0.5px;
         }
         .input-field:focus { border-color: var(--text-main); background: #FFF; box-shadow: 0 0 0 3px rgba(0,0,0,0.03); }
@@ -295,13 +295,13 @@
                     <div style="position: absolute; bottom: 10px; right: 10px; z-index: 6; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
                         🔍 크게 보기
                     </div>
-                    </div>
+                </div>
             </div>
         </section>
 
         <footer class="footer-section">
             <div class="contents">
-                <img class="logo" src="footer_logo.svg" alt="패스오더 로고" onerror="this.style.display='none'; this.parentElement.innerHTML+='<span style=\'font-weight:bold; color:#ccc;\'>PASSORDER</span>'">
+                <img class="logo" src="footer_logo.svg" alt="패스오더 로고">
                 <div class="text-wrapper">
                     <span class="text">상호명 (주)페이타랩 | 대표 곽수용 | 사업자등록번호 452-87-01123</span>
                     <span class="text">고객센터 1644-8725 | 이메일 help@passorder.co.kr</span>
@@ -356,8 +356,37 @@
 
     <script>
         /* ============================================================
+           [0] 성과 추적 시스템 (Google Apps Script 연동)
+           ============================================================ */
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyBpxGQBFpImd8r5Xhr6vXkBQWVT2xQP25E-RO4-7jf88IpUb8obvhRnc8wZ8__4WpJcA/exec"; 
+
+        const SESSION_ID = Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+        let trackData = {
+            session_id: SESSION_ID,
+            scan_time: new Date().toLocaleString('ko-KR'),
+            company: "",
+            store: "",
+            btn1_click: "",
+            btn1_time: "",
+            btn2_click: "",
+            btn2_time: "",
+            phone: "",
+            consent: ""
+        };
+
+        function sendLog() {
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("XXXXXXXX")) return;
+            
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(trackData)
+            }).then(() => console.log("로그 전송 완료"));
+        }
+
+        /* ============================================================
            [1] 데이터베이스 (60개 회사 데이터)
-           URL 예시: index.html?code=한화에스테이트서비스
            ============================================================ */
         const projectData = {
             "한화에스테이트서비스": { company: "한화에스테이트서비스", store: "베러댄와플 동여의도점", addr: "서울특별시 영등포구 63로 32 (여의도동)", time: "3", dist: "111", price: "2500" },
@@ -429,7 +458,6 @@
             const params = new URLSearchParams(window.location.search);
             let code = params.get('code');
 
-            // 코드가 없거나 데이터에 없으면 '한화에스테이트서비스'를 기본값으로 보여줌 (테스트용)
             if (!code || !projectData[code]) {
                 code = "한화에스테이트서비스"; 
             }
@@ -451,25 +479,27 @@
             if(document.getElementById('val-time')) document.getElementById('val-time').innerText = data.time;
             if(document.getElementById('val-dist')) document.getElementById('val-dist').innerText = data.dist;
 
-            // 가격 (천 단위 콤마)
             if(document.getElementById('val-price')) {
                 document.getElementById('val-price').innerText = Number(data.price).toLocaleString(); 
             }
 
-            // 2. 이미지 변수 넣기 (파일명 = 사업자명.jpg)
+            // 2. 이미지 변수 넣기
             const mapImgEl = document.getElementById('val-map-img');
             if(mapImgEl) {
-                // ./images/한화에스테이트서비스.jpg
                 const imgPath = "./images/" + data.company + ".jpg"; 
                 mapImgEl.src = imgPath;
-                mapImgEl.style.display = "block"; // 이미지가 있으면 보이기
+                mapImgEl.style.display = "block"; 
                 
-                // 이미지 로드 실패 시 숨김 처리
                 mapImgEl.onerror = function() {
                     console.log("이미지 로드 실패: " + imgPath);
                     this.style.display = "none";
                 };
             }
+
+            // 3. 접속 로그 전송
+            trackData.company = data.company;
+            trackData.store = data.store;
+            sendLog(); 
         }
 
         // 페이지 로드 시 실행
@@ -484,7 +514,6 @@
             const thumbImg = document.getElementById("val-map-img"); 
             const expandImg = document.getElementById("expandedImg"); 
 
-            // 이미지가 없거나(숨겨짐) 로드 실패한 경우 확대 방지
             if (thumbImg.style.display === "none" || thumbImg.naturalWidth === 0) {
                 alert("확대할 지도가 없습니다.");
                 return;
@@ -492,7 +521,7 @@
 
             modal.style.display = "block";
             expandImg.src = thumbImg.src; 
-            document.body.style.overflow = "hidden"; // 배경 스크롤 막기
+            document.body.style.overflow = "hidden"; 
         }
 
         function closeImageModal() {
@@ -502,7 +531,7 @@
         }
 
         /* ============================================================
-           [4] 기존 모달 및 입력 로직
+           [4] 모달 및 데이터 전송 로직
            ============================================================ */
         const modal = document.getElementById('infoModal');
         const phoneInput = document.getElementById('phoneInput');
@@ -510,6 +539,13 @@
         const submitBtn = document.getElementById('submitBtn');
 
         function openInfoModal() {
+            // [추적] 상생 버튼 클릭 기록 업데이트
+            if(trackData.btn1_click === "") { 
+                trackData.btn1_click = "O";
+                trackData.btn1_time = new Date().toLocaleString('ko-KR');
+                sendLog(); 
+            }
+
             modal.classList.add('active');
             document.body.style.overflow = 'hidden'; 
             setTimeout(() => { phoneInput.focus(); }, 400);
@@ -539,6 +575,14 @@
         agreeChk.addEventListener('change', checkValidation);
 
         function submitData() {
+            // [추적] 최종 버튼 및 입력값 기록 업데이트
+            trackData.btn2_click = "O";
+            trackData.btn2_time = new Date().toLocaleString('ko-KR');
+            trackData.phone = document.getElementById('phoneInput').value;
+            trackData.consent = "Y"; 
+            
+            sendLog(); 
+
             alert("확인되었습니다! 쿠폰을 발송해 드릴게요. 🎁");
         }
     </script>
