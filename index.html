@@ -589,7 +589,7 @@
         function checkValidation() {
             const phoneVal = phoneInput.value.replace(/[^0-9]/g, '');
             const isChecked = agreeChk.checked;
-            if (phoneVal.length >= 10 && isChecked) {
+            if (phoneVal.length >= 11 && isChecked) {
                 submitBtn.disabled = false;
             } else {
                 submitBtn.disabled = true;
