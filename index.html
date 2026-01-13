@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#FFFFFF">
+    
+    <meta name="format-detection" content="telephone=no">
+
     <title>패스오더 상생 프로젝트</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     
@@ -211,25 +214,19 @@
             flex-shrink: 0;
         }
 
-        /* [NEW] 이미지 확대 라이트박스 CSS - 수정됨 */
+        /* [NEW] 이미지 확대 라이트박스 CSS */
         .img-modal-layer {
             display: none; position: fixed; z-index: 9999; 
             padding-top: 0; left: 0; top: 0; width: 100%; height: 100%; 
             background-color: rgba(0,0,0,0.9);
-            /* 중앙 정렬을 위해 Flex 사용 */
             align-items: center; justify-content: center;
         }
         .img-modal-content {
-            /* 크기 및 정렬 초기화 */
             margin: 0; 
             max-width: 100%; 
             max-height: 100%; 
             object-fit: contain; 
-            
-            /* 터치 제스처 충돌 방지 */
-            touch-action: none;
-            
-            /* 부드러운 이동을 위한 트랜지션 제거 (실시간 반응성을 위해) */
+            touch-action: none; /* 중요: 배경 스크롤 방지 */
             transition: transform 0.1s linear;
         }
         .img-close-btn {
@@ -346,8 +343,8 @@
                     <span class="text">상호명 (주)페이타랩 | 대표 곽수용 | 사업자등록번호 452-87-01123</span>
                     <span class="text">고객센터 1644-8725 | 이메일 help@passorder.co.kr</span>
                     <div class="terms-nav-wrapper">
-                        <a class="terms" href="#">이용약관</a>
-                        <a class="terms" href="#">개인정보 처리방침</a>
+                        <a class="terms" href="https://passorder.co.kr/terms-of-use/a172b2f1-41eb-4411-80a1-7703b63d222c" target="_blank">이용약관</a>
+                        <a class="terms" href="https://passorder.co.kr/terms-of-use/d1b1cd9c-6984-4a56-9703-cefd944c9167" target="_blank">개인정보 처리방침</a>
                     </div>
                     <span class="text">©2019 PAYTA LAB CORP. ALL RIGHT RESERVED</span>
                 </div>
@@ -379,7 +376,7 @@
                 <input type="checkbox" id="agreeChk">
                 <div class="check-icon"></div>
                 <span class="terms-text">
-                    [필수] <a href="#" class="privacy-link" onclick="event.stopPropagation()">개인정보 처리 방침</a>에 동의합니다.
+                    [필수] <a href="https://passorder.co.kr/terms-of-use/d1b1cd9c-6984-4a56-9703-cefd944c9167" target="_blank" class="privacy-link" onclick="event.stopPropagation()">개인정보 처리 방침</a>에 동의합니다.
                 </span>
             </label>
 
@@ -582,7 +579,7 @@
            [3] 이미지 확대/이동 (라이트박스) 변수 및 함수
            ============================================================ */
         
-        // 변수들을 상단에 미리 선언하여 참조 오류 방지
+        // 전역 변수 선언
         let currentScale = 1;
         let translateX = 0;
         let translateY = 0;
@@ -612,7 +609,7 @@
                 return;
             }
 
-            modal.style.display = "flex"; // CSS 수정에 맞춰 flex로 변경
+            modal.style.display = "flex"; 
             expandImg.src = thumbImg.src; 
             document.body.style.overflow = "hidden"; 
 
@@ -623,10 +620,6 @@
             lastX = 0;
             lastY = 0;
             updateTransform();
-            
-            // 이벤트 리스너가 중복 등록되지 않도록 한 번만 등록하는 로직이 있으면 좋지만,
-            // 간단하게는 매번 덮어쓰거나, 아래처럼 HTML 로드 시점에 미리 등록해두는 것이 안전합니다.
-            // (아래 [5]번 섹션에서 등록하므로 여기선 생략)
         }
 
         function closeImageModal() {
@@ -641,7 +634,7 @@
             if(imgElement) updateTransform();
         }
 
-        // 배경 클릭 시 닫기 (이미지 자체 클릭시는 닫히지 않게 하기 위해 수정됨)
+        // 배경 클릭 시 닫기
         document.getElementById('imgModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeImageModal();
@@ -666,7 +659,6 @@
 
             modal.classList.add('active');
             document.body.style.overflow = 'hidden'; 
-            
             // [수정] 키보드 자동 실행 제거됨
         }
 
@@ -713,7 +705,6 @@
         /* ============================================================
            [5] 이미지 줌 & 팬(이동) 이벤트 등록
            ============================================================ */
-        // 페이지 로드 후 이미지 엘리먼트 가져오기
         const expandImgElement = document.getElementById('expandedImg');
         
         if(expandImgElement) {
