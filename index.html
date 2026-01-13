@@ -1,431 +1,6 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#FFFFFF">
-    
-    <meta name="format-detection" content="telephone=no">
-
-    <title>패스오더 상생 프로젝트</title>
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
-    
-    <style>
-        /* --- [1. 변수 및 초기화] --- */
-        :root {
-            --app-bg: #F5F6F8;
-            --card-bg: #FFFFFF;
-            --primary: #FF7949;
-            --navy: #132D48;
-            --text-main: #333333;
-            --text-sub: #8B95A1;
-            --text-desc: #4E5968;
-            --border-color: #E5E8EB;
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            user-select: none;
-        }
-
-        body {
-            margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Pretendard Variable", Pretendard, sans-serif;
-            background-color: var(--app-bg);
-            color: var(--text-main);
-            -ms-overflow-style: none; scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-            overflow-x: hidden;
-        }
-        body::-webkit-scrollbar { display: none; }
-        
-        .app-view {
-            max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative;
-            padding-bottom: calc(90px + var(--safe-bottom));
-        }
-
-        /* --- [Hero Section] --- */
-        .hero-section { padding: calc(40px + var(--safe-top)) 24px 40px; background-color: transparent; }
-        .hero-top-center { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 24px; }
-
-        .project-label {
-            font-size: 13px; font-weight: 700; color: var(--primary); 
-            background: rgba(255, 121, 73, 0.08); padding: 8px 12px; border-radius: 999px; 
-            margin-bottom: 12px; display: inline-flex; align-items: center; letter-spacing: -0.02em; 
-        }
-
-        .campaign-desc-box {
-            background-color: #FFFFFF; border-radius: 12px; padding: 16px 20px; width: 100%;
-            font-size: 13px; line-height: 1.55; color: #6B7684; letter-spacing: -0.02em; word-break: keep-all;
-        }
-
-        .hero-divider { width: 100%; height: 1px; background-color: #FFFFFF; border: none; margin-bottom: 32px; }
-
-        .hero-title-group { margin-bottom: 32px; text-align: left; }
-        .recipient-text {
-            font-size: 18px; font-weight: 600; color: #6B7684; margin-bottom: 10px; 
-            letter-spacing: -0.02em; line-height: 1.5; display: block;
-        }
-        .main-message {
-            font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.03em; 
-            color: var(--text-main); margin: 0; word-break: keep-all;
-        }
-
-        .message-card {
-            background-color: #FFFFFF; border: 1px solid rgba(0,0,0,0.06); border-radius: 20px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.04); padding: 24px;
-        }
-        .message-body { font-size: 16px; line-height: 1.65; color: #4E5968; letter-spacing: -0.03em; word-break: keep-all; }
-        .message-body p { margin: 0 0 16px 0; }
-        .message-body p:last-child { margin-bottom: 0; }
-        
-        .txt-bold { font-weight: 700; color: var(--text-main); }
-        .txt-highlight { font-weight: 800; color: var(--primary); }
-
-        /* --- [Common Sections] --- */
-        .section-card {
-            background: #FFFFFF; border-radius: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.06); overflow: hidden;
-        }
-
-        /* Coupon */
-        .coupon-section { padding: 0 20px 24px; }
-        .coupon-card-wrap { height: 132px; position: relative; display: flex; }
-        .coupon-left { flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: center; position: relative; }
-        .coupon-divider { position: absolute; right: 0; top: 14px; bottom: 14px; width: 1px; border-right: 1px dashed rgba(0,0,0,0.12); }
-        .punch-hole {
-            position: absolute; right: -12px; width: 24px; height: 24px;
-            background-color: var(--app-bg); border-radius: 50%; z-index: 10;
-            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.05);
-        }
-        .punch-top { top: -12px; } .punch-bottom { bottom: -12px; }
-        .shop-name { font-size: 12px; color: #8B95A1; font-weight: 600; margin-bottom: 6px; }
-        .menu-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.03em; color: var(--text-main); }
-        .price-wrap { display: flex; align-items: baseline; gap: 8px; }
-        .price-origin { text-decoration: line-through; color: #C7C7CC; font-size: 12px; font-weight: 500; }
-        .price-final { color: var(--primary); font-size: 22px; font-weight: 900; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        .coupon-right { width: 100px; background: #FAFAFB; display: flex; align-items: center; justify-content: center; }
-        .coffee-visual { font-size: 48px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-
-        /* Location */
-        .location-section { padding: 0 20px; margin-bottom: 48px; }
-        .section-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; padding-left: 2px; letter-spacing: -0.03em; color: var(--text-main); }
-        .loc-details { padding: 20px 24px; }
-        .loc-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
-        .loc-addr { font-size: 14px; color: var(--text-sub); margin-bottom: 12px; }
-        .loc-badge {
-            display: inline-block; background-color: #F2F4F6; color: #4E5968;
-            font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 6px;
-        }
-        
-        /* 지도 영역 */
-        .map-area { 
-            width: 100%; 
-            height: auto;       
-            min-height: 160px; 
-            background-color: #F0F4F8; 
-            position: relative; 
-            cursor: pointer; 
-        }
-        .map-pattern {
-            width: 100%; height: 100%; position: absolute; top:0; left:0;
-            background-image: linear-gradient(rgba(19, 45, 72, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(19, 45, 72, 0.1) 1px, transparent 1px);
-            background-size: 24px 24px; opacity: 0.45;
-        }
-
-        /* Footer */
-        .footer-section { padding: 32px 24px 60px; background-color: transparent; font-size: 11px; color: #8B95A1; line-height: 1.5; word-break: keep-all; }
-        .footer-section .logo { height: 20px; width: auto; margin-bottom: 16px; opacity: 0.6; display: block; }
-        .footer-section .text { display: block; margin-bottom: 4px; color: #8B95A1; font-size: 11px; line-height: 1.5; }
-        .footer-section .terms-nav-wrapper { display: flex; flex-wrap: wrap; gap: 12px 16px; margin: 16px 0 20px; }
-        .footer-section .terms { text-decoration: none; color: #6B7684; font-weight: 500; font-size: 11px; cursor: pointer; }
-
-        /* Sticky CTA */
-        .sticky-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 100;
-            background: rgba(245, 246, 248, 0.86); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(0,0,0,0.05); padding: 12px 20px calc(12px + var(--safe-bottom));
-            display: flex; justify-content: center;
-        }
-        .btn-cta {
-            width: 100%; max-width: 440px; height: 56px;
-            background-color: var(--primary); color: #fff;
-            font-size: 17px; font-weight: 700; border: none; border-radius: 16px;
-            box-shadow: 0 10px 22px rgba(255, 121, 73, 0.18); cursor: pointer; transition: all 0.2s ease;
-        }
-        .btn-cta:disabled { background-color: #E5E8EB; color: #B0B8C1; box-shadow: none; cursor: not-allowed; }
-        .btn-cta:active:not(:disabled) { transform: scale(0.96); }
-
-        /* Modal Styles */
-        .modal-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #FFFFFF; z-index: 999;
-            transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex; flex-direction: column; padding-top: var(--safe-top);
-        }
-        .modal-layer.active { transform: translateY(0); }
-        .modal-content { flex: 1; padding: 28px 20px; max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; overflow-y: auto; }
-        .modal-header { margin-bottom: 32px; text-align: left; }
-        .modal-icon { font-size: 36px; margin-bottom: 16px; display: block; }
-        .modal-title { font-size: 26px; font-weight: 800; line-height: 1.35; color: var(--text-main); margin: 0 0 16px; letter-spacing: -0.03em; }
-        .modal-desc { font-size: 16px; line-height: 1.6; color: var(--text-desc); margin: 0; word-break: keep-all; letter-spacing: -0.02em; }
-        .modal-desc strong { color: var(--text-main); font-weight: 700; }
-        .input-area { margin-bottom: 24px; }
-        .input-label { display: block; font-size: 13px; font-weight: 700; color: #6B7684; margin-bottom: 10px; letter-spacing: -0.01em; }
-        .input-field {
-            width: 100%; height: 56px; padding: 0 16px; font-size: 20px; font-weight: 700; color: var(--text-main);
-            border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; background: #F7F8FA; outline: none; transition: all 0.2s;
-            -webkit-appearance: none; -moz-appearance: none; appearance: none;
-            letter-spacing: 0.5px;
-        }
-        .input-field:focus { border-color: var(--text-main); background: #FFF; box-shadow: 0 0 0 3px rgba(0,0,0,0.03); }
-        .terms-wrap { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 12px 0; margin-bottom: 20px; }
-        .check-icon {
-            width: 24px; height: 24px; border-radius: 6px; border: 2px solid #C7C7CC; background: #FFF;
-            position: relative; transition: all 0.2s; flex-shrink: 0;
-        }
-        .check-icon::after {
-            content: ''; position: absolute; top: 45%; left: 50%; width: 6px; height: 10px; border: solid #FFF;
-            border-width: 0 2px 2px 0; transform: translate(-50%, -60%) rotate(45deg); opacity: 0; transition: opacity 0.2s;
-        }
-        input[type="checkbox"]:checked + .check-icon { background-color: var(--primary); border-color: var(--primary); }
-        input[type="checkbox"]:checked + .check-icon::after { opacity: 1; }
-        .terms-text { font-size: 14px; font-weight: 700; color: var(--text-main); letter-spacing: -0.02em; }
-        .privacy-link { color: var(--text-main); text-decoration: underline; cursor: pointer; }
-        #agreeChk { display: none; }
-        .notice-box { background-color: #F7F8FA; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px; padding: 20px; margin-bottom: 40px; }
-        .notice-title { font-size: 13px; font-weight: 800; color: #4E5968; margin: 0 0 12px; letter-spacing: -0.02em; }
-        .notice-list { display: flex; flex-direction: column; gap: 10px; }
-        .notice-item { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; color: #666; line-height: 1.5; letter-spacing: -0.02em; word-break: keep-all; }
-        .notice-dot { color: #BBB; flex-shrink: 0; font-weight: bold; margin-top: 1px; }
-        .notice-item.highlight-notice { background-color: rgba(255, 121, 73, 0.06); padding: 12px; border-radius: 10px; margin: 0 -8px; }
-        .notice-item.highlight-notice span { color: var(--primary); font-weight: 700; }
-        .notice-item.highlight-notice .notice-dot { color: var(--primary); }
-        
-        .modal-footer { 
-            padding: 12px 20px calc(12px + var(--safe-bottom)); 
-            width: 100%; max-width: 480px; margin: 0 auto; 
-            border-top: 1px solid rgba(0,0,0,0.05); background: #FFF; 
-            flex-shrink: 0;
-        }
-
-        /* [NEW] 이미지 확대 라이트박스 CSS */
-        .img-modal-layer {
-            display: none; position: fixed; z-index: 9999; 
-            padding-top: 0; left: 0; top: 0; width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.9);
-            align-items: center; justify-content: center;
-        }
-        .img-modal-content {
-            margin: 0; 
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain; 
-            touch-action: none; /* 중요: 배경 스크롤 방지 */
-            transition: transform 0.1s linear;
-        }
-        .img-close-btn {
-            position: absolute; top: 20px; right: 25px; color: #f1f1f1; 
-            font-size: 40px; font-weight: bold; cursor: pointer; z-index: 10001;
-        }
-        .img-caption { 
-            position: absolute; bottom: 20px; left: 0; right: 0;
-            text-align: center; color: #ccc; font-size: 14px; pointer-events: none; 
-        }
-        
-        /* [NEW] 완료(Success) 페이지 CSS */
-        .success-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; z-index: 2000;
-            display: none; 
-            flex-direction: column; align-items: center; justify-content: center;
-            text-align: center;
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-        .success-layer.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .success-icon { font-size: 80px; margin-bottom: 24px; animation: bounce 2s infinite; }
-        @keyframes bounce { 
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 
-            40% {transform: translateY(-20px);} 
-            60% {transform: translateY(-10px);} 
-        }
-        .success-title { font-size: 26px; font-weight: 800; margin-bottom: 12px; color: var(--text-main); letter-spacing: -0.03em; }
-        .success-desc { font-size: 18px; color: var(--text-desc); line-height: 1.6; letter-spacing: -0.02em; }
-        .redirect-msg { margin-top: 24px; font-size: 14px; color: #8B95A1; animation: fadeIn 2s forwards; }
-    </style>
-</head>
-<body>
-
-    <div class="app-view">
-        <section class="hero-section">
-            <div class="hero-top-center">
-                <span class="project-label">카페 주문 1등 앱 패스오더 X 소상공인 상생 프로젝트</span>
-                <div class="campaign-desc-box">
-                    마케팅 비용 부담으로 홍보에 어려움을 겪는 사장님들께, <br>패스오더가 비용을 지원하여 고객과 연결하는 프로젝트 입니다.
-                </div>
-            </div>
-
-            <hr class="hero-divider">
-
-            <div class="hero-title-group">
-                <span class="recipient-text"><span id="val-company-1">사업자명</span> 임직원 여러분께,</span>
-                <h1 class="main-message">
-                    패스오더가 커피를 준비했습니다 ☕️
-                </h1>
-            </div>
-            
-            <div class="message-card">
-                <div class="message-body">
-                    <p>
-                        <span class="txt-bold" id="val-store-1">매장명</span>에서<br>
-                        사용하는 커피 쿠폰 비용은<br>
-                        사장님 부담 없이, <span class="txt-highlight">패스오더가 전액 지원</span>합니다.
-                    </p>
-                    <p>
-                        <span class="txt-bold"><span id="val-company-2">사업자명</span> 임직원</span><br>
-                        여러분은 부담 없이, 맛있게 즐겨주세요 😉<br>
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <section class="coupon-section">
-            <div class="section-header">쿠폰 정보</div>
-            <div class="section-card coupon-card-wrap">
-                <div class="punch-hole punch-top"></div>
-                <div class="punch-hole punch-bottom"></div>
-                <div class="coupon-left">
-                    <div class="coupon-divider"></div>
-                    <div class="shop-name" id="val-store-2">매장명</div>
-                    <div class="menu-title">아메리카노 무료 쿠폰</div>
-                    <div class="price-wrap">
-                        <span class="price-origin"><span id="val-price">0</span>원</span>
-                        <span class="price-final">0원</span>
-                    </div>
-                </div>
-                <div class="coupon-right">
-                    <div class="coffee-visual">☕️</div>
-                </div>
-            </div>
-        </section>
-
-        <section class="location-section">
-            <div class="section-header">쿠폰 사용처</div>
-            <div class="section-card">
-                <div class="loc-details">
-                    <div class="loc-name" id="val-store-3">매장명</div>
-                    <div class="loc-addr" id="val-addr">매장 주소</div>
-                    <div class="loc-badge">도보 <span id="val-time">0</span>분 (<span id="val-dist">0</span>m)</div>
-                </div>
-                
-                <div class="map-area" onclick="openImageModal()">
-                    <div class="map-pattern"></div>
-                    <img id="val-map-img" src="" alt="매장 지도" style="width: 100%; height: auto; display: none; position: relative; z-index: 2;">
-                    
-                    <div style="position: absolute; bottom: 10px; right: 10px; z-index: 6; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-                        🔍 크게 보기
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <footer class="footer-section">
-            <div class="contents">
-                <img class="logo" src="footer_logo.svg" alt="패스오더 로고">
-                <div class="text-wrapper">
-                    <span class="text">상호명 (주)페이타랩 | 대표 곽수용 | 사업자등록번호 452-87-01123</span>
-                    <span class="text">고객센터 1644-8725 | 이메일 help@passorder.co.kr</span>
-                    <div class="terms-nav-wrapper">
-                        <a class="terms" href="https://passorder.co.kr/terms-of-use/a172b2f1-41eb-4411-80a1-7703b63d222c" target="_blank">이용약관</a>
-                        <a class="terms" href="https://passorder.co.kr/terms-of-use/d1b1cd9c-6984-4a56-9703-cefd944c9167" target="_blank">개인정보 처리방침</a>
-                    </div>
-                    <span class="text">©2019 PAYTA LAB CORP. ALL RIGHT RESERVED</span>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <div class="sticky-bar">
-        <button class="btn-cta" onclick="openInfoModal()">💖 상생 프로젝트 함께하기 💖</button>
-    </div>
-
-    <div id="infoModal" class="modal-layer">
-        <div class="modal-content">
-            <div class="modal-header" style="position: relative;">
-                <button onclick="closeModal()" style="position: absolute; top: 0; right: 0; border: none; background: transparent; font-size: 20px; padding: 10px; cursor: pointer; color: #8B95A1;">✕</button>
-                <span class="modal-icon">📢</span>
-                <h2 class="modal-title">꼭 확인해주세요!</h2>
-                <p class="modal-desc">
-                    소상공인 상생 프로젝트 <br>커피 쿠폰은 <strong>1인 1회 지급</strong> 됩니다.<br>
-                    <span style="display:block; height:6px;"></span>
-                    이미 쿠폰을 받으셨는지 <strong>휴대폰 번호로</strong> 확인할게요!
-                </p>
-            </div>
-            <div class="input-area">
-                <label class="input-label">휴대폰 번호 입력</label>
-                <input type="tel" id="phoneInput" class="input-field" placeholder="01012345678" maxlength="11" inputmode="numeric" autocomplete="off">
-            </div>
-            <label class="terms-wrap" for="agreeChk">
-                <input type="checkbox" id="agreeChk">
-                <div class="check-icon"></div>
-                <span class="terms-text">
-                    [필수] <a href="https://passorder.co.kr/terms-of-use/d1b1cd9c-6984-4a56-9703-cefd944c9167" target="_blank" class="privacy-link" onclick="event.stopPropagation()">개인정보 처리 방침</a>에 동의합니다.
-                </span>
-            </label>
-
-            <div class="notice-box">
-                <h4 class="notice-title">유의사항</h4>
-                <div class="notice-list">
-                    <div class="notice-item highlight-notice">
-                        <span class="notice-dot">•</span>
-                        <span>해당 쿠폰은, <strong>패스오더 앱 회원가입을 완료한 유저에게 지급</strong> 됩니다.</span>
-                    </div>
-                    <div class="notice-item highlight-notice">
-                        <span class="notice-dot">•</span>
-                        <span>해당 쿠폰은, <strong>패스오더 앱 설치 및 회원가입 완료 다음 날 지급</strong> 됩니다.</span>
-                    </div>
-                    <div class="notice-item">
-                        <span class="notice-dot">•</span>
-                        <span>해당 쿠폰은, 패스오더에서 제공하는 소상공인 지원프로젝트로 1인 1회 지급이 원칙이며 중복 지급은 제한됩니다.</span>
-                    </div>
-                    <div class="notice-item">
-                        <span class="notice-dot">•</span>
-                        <span>해당 쿠폰은 패스오더 앱을 통한 주문 및 결제시 사용가능하며 현장 결제 및 전화주문으로는 사용할 수 없습니다.</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="modal-footer">
-            <button class="btn-cta" id="submitBtn" disabled onclick="submitData()">지금 바로 커피 쿠폰 받기</button>
-        </div>
-    </div>
-
-    <div id="imgModal" class="img-modal-layer" style="display:none;">
-        <span class="img-close-btn" onclick="closeImageModal()">&times;</span>
-        <img class="img-modal-content" id="expandedImg">
-        <div class="img-caption">화면을 누르면 닫힙니다</div>
-    </div>
-
-    <div id="successView" class="success-layer">
-        <div class="success-icon">🎁</div>
-        <h2 class="success-title">신청이 완료되었어요!</h2>
-        <p class="success-desc">
-            빠르게 확인 후<br>쿠폰을 발송해 드릴게요.
-        </p>
-        <p class="redirect-msg">잠시 후 앱 다운로드 화면으로 이동합니다...</p>
-    </div>
-
-    <script>
+<script>
         /* ============================================================
-           [0] 성과 추적 시스템 (Google Apps Script 연동)
+           [0] 성과 추적 시스템
            ============================================================ */
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyBpxGQBFpImd8r5Xhr6vXkBQWVT2xQP25E-RO4-7jf88IpUb8obvhRnc8wZ8__4WpJcA/exec"; 
 
@@ -445,7 +20,6 @@
 
         function sendLog() {
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("XXXXXXXX")) return;
-            
             fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors", 
@@ -455,7 +29,7 @@
         }
 
         /* ============================================================
-           [1] 데이터베이스 (60개 회사 데이터)
+           [1] 데이터베이스
            ============================================================ */
         const projectData = {
             "한화에스테이트서비스": { company: "한화에스테이트서비스", store: "베러댄와플 동여의도점", addr: "서울특별시 영등포구 63로 32 (여의도동)", time: "3", dist: "111", price: "2500" },
@@ -521,7 +95,7 @@
         };
 
         /* ============================================================
-           [2] 데이터 바인딩 및 이미지 처리 로직
+           [2] 데이터 바인딩 및 이미지 처리
            ============================================================ */
         function initPageData() {
             const params = new URLSearchParams(window.location.search);
@@ -533,53 +107,40 @@
 
             const data = projectData[code];
 
-            // 1. 텍스트 변수 넣기
             const titleEl = document.querySelector('title');
             if(titleEl) titleEl.innerText = "패스오더 X " + data.company;
             
             if(document.getElementById('val-company-1')) document.getElementById('val-company-1').innerText = data.company;
             if(document.getElementById('val-company-2')) document.getElementById('val-company-2').innerText = data.company;
-            
             if(document.getElementById('val-store-1')) document.getElementById('val-store-1').innerText = data.store;
             if(document.getElementById('val-store-2')) document.getElementById('val-store-2').innerText = data.store;
             if(document.getElementById('val-store-3')) document.getElementById('val-store-3').innerText = data.store;
-
             if(document.getElementById('val-addr')) document.getElementById('val-addr').innerText = data.addr;
             if(document.getElementById('val-time')) document.getElementById('val-time').innerText = data.time;
             if(document.getElementById('val-dist')) document.getElementById('val-dist').innerText = data.dist;
-
             if(document.getElementById('val-price')) {
                 document.getElementById('val-price').innerText = Number(data.price).toLocaleString(); 
             }
 
-            // 2. 이미지 변수 넣기
             const mapImgEl = document.getElementById('val-map-img');
             if(mapImgEl) {
                 const imgPath = "./images/" + data.company + ".jpg"; 
                 mapImgEl.src = imgPath;
                 mapImgEl.style.display = "block"; 
-                
                 mapImgEl.onerror = function() {
-                    console.log("이미지 로드 실패: " + imgPath);
                     this.style.display = "none";
                 };
             }
 
-            // 3. 접속 로그 전송
             trackData.company = data.company;
             trackData.store = data.store;
             sendLog(); 
         }
-
-        // 페이지 로드 시 실행
         initPageData();
 
-
         /* ============================================================
-           [3] 이미지 확대/이동 (라이트박스) 변수 및 함수
+           [3] 이미지 확대/이동 (라이트박스)
            ============================================================ */
-        
-        // 전역 변수 선언
         let currentScale = 1;
         let translateX = 0;
         let translateY = 0;
@@ -601,7 +162,6 @@
             const thumbImg = document.getElementById("val-map-img"); 
             const expandImg = document.getElementById("expandedImg"); 
             
-            // 전역 변수에 할당
             imgElement = expandImg;
 
             if (thumbImg.style.display === "none" || thumbImg.naturalWidth === 0) {
@@ -613,7 +173,6 @@
             expandImg.src = thumbImg.src; 
             document.body.style.overflow = "hidden"; 
 
-            // 열 때 위치/배율 초기화
             currentScale = 1;
             translateX = 0;
             translateY = 0;
@@ -626,15 +185,12 @@
             const modal = document.getElementById("imgModal");
             modal.style.display = "none";
             document.body.style.overflow = "";
-            
-            // 닫을 때 초기화
             currentScale = 1; 
             translateX = 0;
             translateY = 0;
             if(imgElement) updateTransform();
         }
 
-        // 배경 클릭 시 닫기
         document.getElementById('imgModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeImageModal();
@@ -642,7 +198,7 @@
         });
 
         /* ============================================================
-           [4] 모달 및 데이터 전송 로직
+           [4] 모달 및 데이터 전송
            ============================================================ */
         const modal = document.getElementById('infoModal');
         const phoneInput = document.getElementById('phoneInput');
@@ -650,16 +206,13 @@
         const submitBtn = document.getElementById('submitBtn');
 
         function openInfoModal() {
-            // [추적] 상생 버튼 클릭 기록 업데이트
             if(trackData.btn1_click === "") { 
                 trackData.btn1_click = "O";
                 trackData.btn1_time = new Date().toLocaleString('ko-KR');
                 sendLog(); 
             }
-
             modal.classList.add('active');
             document.body.style.overflow = 'hidden'; 
-            // [수정] 키보드 자동 실행 제거됨
         }
 
         function closeModal() {
@@ -671,7 +224,6 @@
         function checkValidation() {
             const phoneVal = phoneInput.value.replace(/[^0-9]/g, '');
             const isChecked = agreeChk.checked;
-            
             if (phoneVal.length === 11 && isChecked) {
                 submitBtn.disabled = false;
             } else {
@@ -691,26 +243,23 @@
             trackData.btn2_time = new Date().toLocaleString('ko-KR');
             trackData.phone = document.getElementById('phoneInput').value;
             trackData.consent = "Y"; 
-            
             sendLog(); 
-
             modal.classList.remove('active');
             document.getElementById('successView').classList.add('active');
-
             setTimeout(function() {
                 window.location.href = "https://passorder.app.link/app-download";
             }, 3000);
         }
 
         /* ============================================================
-           [5] 이미지 줌 & 팬(이동) 이벤트 등록
+           [5] 이미지 줌 & 팬 + [NEW] 아이폰 전체화면 확대 방지
            ============================================================ */
         const expandImgElement = document.getElementById('expandedImg');
         
+        // 1) 지도 이미지 확대/이동 로직
         if(expandImgElement) {
             expandImgElement.addEventListener('touchstart', function(e) {
                 if (e.touches.length === 2) {
-                    // [두 손가락] 핀치 줌 시작
                     e.preventDefault();
                     initialDist = Math.hypot(
                         e.touches[0].pageX - e.touches[1].pageX,
@@ -718,7 +267,6 @@
                     );
                     baseScale = currentScale;
                 } else if (e.touches.length === 1) {
-                    // [한 손가락] 이동(패닝) 시작
                     startX = e.touches[0].pageX;
                     startY = e.touches[0].pageY;
                     lastX = translateX;
@@ -727,37 +275,47 @@
             }, { passive: false });
 
             expandImgElement.addEventListener('touchmove', function(e) {
-                e.preventDefault(); // 화면 스크롤 방지
+                // 이미지 위에서의 제스처는 브라우저 기본 동작 무조건 막음 (확대/이동 전용)
+                e.preventDefault();
 
                 if (e.touches.length === 2) {
-                    // [두 손가락] 확대/축소 로직
                     const currentDist = Math.hypot(
                         e.touches[0].pageX - e.touches[1].pageX,
                         e.touches[0].pageY - e.touches[1].pageY
                     );
-                    
                     if (initialDist > 0) {
                         const scaleFactor = currentDist / initialDist; 
                         currentScale = baseScale * scaleFactor;
-
-                        // 배율 제한 (1배 ~ 5배)
                         if (currentScale < 1) currentScale = 1;
                         if (currentScale > 5) currentScale = 5;
-                        
                         updateTransform();
                     }
                 } else if (e.touches.length === 1 && currentScale > 1) {
-                    // [한 손가락] 이동 로직 (확대된 상태에서만 동작하도록)
                     const dx = e.touches[0].pageX - startX;
                     const dy = e.touches[0].pageY - startY;
-
                     translateX = lastX + dx;
                     translateY = lastY + dy;
-
                     updateTransform();
                 }
             }, { passive: false });
         }
+
+        // 2) [중요] 아이폰에서 지도 외 다른 영역(body) 확대 방지
+        document.body.addEventListener('touchmove', function(e) {
+            // 두 손가락 터치(확대 시도)이면서 && 대상이 지도 이미지가 아니면
+            if (e.touches.length > 1 && e.target.id !== "expandedImg") {
+                // 강제로 무시해서 화면 확대를 막음
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // 3) 더블 탭 확대 방지 (아이폰)
+        let lastTouchEnd = 0;
+        document.documentElement.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
     </script>
-</body>
-</html>
